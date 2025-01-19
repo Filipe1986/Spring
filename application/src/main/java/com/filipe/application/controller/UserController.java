@@ -4,6 +4,7 @@ package com.filipe.application.controller;
 
 import com.filipe.User;
 import com.filipe.application.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,28 +19,31 @@ public class UserController {
      }
 
      @GetMapping("/users")
-     public List<User> getUsers() {
-         return userService.getUsers();
+     public ResponseEntity<List<?>> getUsers() {
+         return ResponseEntity.ok().body(userService.getUsers());
      }
 
      @GetMapping("/users/{id}")
-     public User getUser(@PathVariable Long id) {
-         return userService.getUser(id);
+     public ResponseEntity<User> getUser(@PathVariable Long id) {
+         return ResponseEntity.ok().body(userService.getUser(id));
      }
 
      @PostMapping("/users")
-     public User addUser(User user) {
-         return userService.addUser(user);
+     public ResponseEntity<User> addUser(User user) {
+         return ResponseEntity.ok().body(userService.addUser(user));
      }
 
      @PutMapping("/users/{id}")
-     public User updateUser(@PathVariable Long id, User user) {
-         return userService.updateUser(id, user);
+     public ResponseEntity<User> updateUser(@PathVariable Long id, User user) {
+         return ResponseEntity.ok().body(userService.updateUser(id, user));
      }
 
      @DeleteMapping("/users/{id}")
-     public void deleteUser(@PathVariable Long id) {
+     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+
          userService.deleteUser(id);
+         return ResponseEntity.ok().body("User deleted");
+
      }
 
 }

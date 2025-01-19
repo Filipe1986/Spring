@@ -8,7 +8,7 @@ import java.util.List;
 @Service
 public class UserService {
     public List<User> getUsers() {
-        return null;
+        return List.of(new User(1L, "Filipe", "filipe@spring.com"), new User(2L, "Paola", "filipe@spring.com"));
     }
 
     public User getUser(Long id) {
