@@ -13,14 +13,6 @@ class ApplicationTest {
     private int port;
 
     @Test
-    void main() {
-    }
-
-    @Test
-    void contextLoads() {
-    }
-
-    @Test
     void getUsers() {
 
         RestTemplate restTemplate = new RestTemplate();
