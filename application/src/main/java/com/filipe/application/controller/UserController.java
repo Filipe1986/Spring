@@ -2,7 +2,7 @@ package com.filipe.application.controller;
 
 
 
-import com.filipe.User;
+import com.filipe.application.entity.User;
 import com.filipe.application.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +29,7 @@ public class UserController {
      }
 
      @PostMapping("/users")
-     public ResponseEntity<User> addUser(User user) {
+     public ResponseEntity<User> addUser(@RequestBody User user) {
          return ResponseEntity.ok().body(userService.addUser(user));
      }
 

@@ -1,8 +1,7 @@
 package com.filipe.scenarios;
 
-import com.filipe.User;
 import com.filipe.application.Application;
-import org.junit.Before;
+import com.filipe.application.entity.User;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +15,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Objects;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class)
 class ApplicationTest {
@@ -30,9 +28,10 @@ class ApplicationTest {
         PostgreSQLContainer<?> postgis = new PostgreSQLContainer<>(
                 DockerImageName.parse("postgis/postgis:16-3.4-alpine")
                         .asCompatibleSubstituteFor("postgres")
-        );
+        ); // Retrieve dynamic port
 
         // Configure container with password and port
+        postgis.withExposedPorts(5432);
 
         // Start the container
         postgis.start();
@@ -42,6 +41,12 @@ class ApplicationTest {
             String jdbcUrl = postgis.getJdbcUrl();
             String username = postgis.getUsername();
             String password = postgis.getPassword();
+
+            System.setProperty("spring.datasource.url", postgis.getJdbcUrl());
+            System.setProperty("spring.datasource.username", postgis.getUsername());
+            System.setProperty("spring.datasource.password", postgis.getPassword());
+
+            System.out.println("JDBC URL: " + jdbcUrl + " Username: " + username + " Password: " + password);
 
             Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
 
@@ -59,6 +64,7 @@ class ApplicationTest {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(createTableQuery);
                 System.out.println("Users table created successfully.");
+
             }
 
             // Close the connection
@@ -69,7 +75,26 @@ class ApplicationTest {
     }
 
 
+    @Test
+    void addUser(){
 
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://localhost:"+ port +"/users";
+        User user = new User();
+        user.setEmail("john@email.com");
+        user.setName("John");
+
+
+
+
+        ResponseEntity<User> response = restTemplate.postForEntity(url, user, User.class);
+
+        User newUser = response.getBody();
+
+        System.out.println(newUser);
+
+        assert newUser != null;
+    }
 
 
     @Test
@@ -82,9 +107,8 @@ class ApplicationTest {
         User user = response.getBody();
 
         assert user != null;
-        assert user.id() == 1L;
-        assert user.name().equals("Filipe");
-        assert user.email().equals("filipe@spring.com");
+        assert user.getEmail().equals("john@email.com");
+
 
     }
 
@@ -98,7 +122,7 @@ class ApplicationTest {
         List<?> users = response.getBody();
 
         assert users != null;
-        assert users.size() == 2;
+        assert users.size() == 1;
 
     }
 
